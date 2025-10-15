@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabrina Sultana - AI & SE Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Define color variables for easy theming */
+        :root {
+            --primary-color: #4B0082; /* Deep Indigo/Violet for main headings */
+            --accent-color: #9333ea; /* Bright, modern purple for links/accents */
+            --bg-color: #F8F4FF; /* Very light lavender/off-white background */
+            --card-bg: #FFFFFF; /* Pure white for card backgrounds */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color); 
+            color: #1f2937; /* Darker text for contrast */
+            min-height: 100vh;
+        }
+
+        /* Hero Text Styling */
+        .hero-text h1 {
+            color: var(--primary-color);
+        }
+
+        /* Typing Cursor Styling */
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1em;
+            background-color: var(--accent-color);
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            0%,100% {opacity:1;}
+            50% {opacity:0;}
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 2.5rem; /* Slightly larger titles */
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1.1;
+        }
+
+        /* Project, Credentials, and Live Demo Cards */
+        .professional-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+            box-shadow: 0 4px 10px rgba(75, 0, 130, 0.08); /* Soft initial shadow */
+            display: flex; 
+            flex-direction: column;
+            cursor: grab; /* Indicate draggable item */
+            min-height: 250px; 
+            height: 100%;
+        }
+        .professional-card:hover {
+            transform: translateY(-8px); /* Lift higher on hover */
+            box-shadow: 0 15px 25px rgba(75, 0, 130, 0.15); /* Deeper shadow on hover */
+        }
+        
+        /* Dragging state styling for Projects & Demos */
+        .professional-card.dragging, .live-demo-item.dragging, .skill-item.dragging {
+            opacity: 0.5;
+            border: 2px dashed var(--accent-color);
+        }
+        
+        /* Drop target feedback for Projects & Demos/Games */
+        .project-container .drag-over, .live-demo-container .drag-over, .games-container .drag-over {
+            box-shadow: 0 0 0 4px var(--accent-color) inset;
+            background-color: var(--bg-color);
+        }
+
+        /* Skill Item Styling for drag feedback */
+        .skill-item {
+            transition: transform 0.1s ease-out;
+            cursor: grab;
+            padding: 0.5rem; 
+            border-radius: 0.5rem;
+        }
+        .skill-container .drag-over {
+            box-shadow: 0 0 0 3px var(--accent-color) inset;
+            background-color: #EDE8F5; /* A slightly darker background hint */
+        }
+
+        /* Profile Image Ring Effect (Clean & Subtle) */
+        .profile-ring-container {
+            border: 4px solid var(--accent-color);
+            padding: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.6); 
+            transition: all 0.5s ease;
+        }
+        
+        /* Style for the embedded live demo iframe container */
+        .live-demo-item {
+            cursor: grab; /* Override professional-card cursor for specific demo items */
+        }
+        
+        /* Style for the embedded live demo iframe - Ensures responsiveness */
+        .live-demo-iframe {
+            width: 100%;
+            /* INCREASED HEIGHT FOR GAMES AND LIVE DEMOS */
+            height: 70vh; 
+            border: 4px solid var(--accent-color);
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(75, 0, 130, 0.1);
+            background-color: white;
+            overflow: hidden;
+            max-width: 100%; 
+            display: block; 
+        }
+        
+        /* --- INTERACTIVE PAD STYLES (Resizable Window) --- */
+
+        /* Positioning for the draggable/resizable pad */
+        #interactive-pad-container {
+            /* Initial centered position, overridden by JS dragging/resizing */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            /* INCREASED INITIAL WIDTH AND MAX-WIDTH to make it prominently large */
+            width: 80vw;
+            max-width: 50rem; /* Tailwind 'max-w-3xl' equivalent */
+            min-width: 350px;
+            min-height: 400px; 
+            z-index: 1000;
+            /* The key for resizing the pad "window" */
+            resize: both; 
+            overflow: auto;
+        }
+        
+        /* Header style for drag handle */
+        #pad-header {
+            cursor: grab; 
+            touch-action: none; /* Prevent browser touch behavior interference */
+        }
+        
+        /* Canvas styling */
+        #drawing-canvas {
+            background-color: #ffffff; 
+            touch-action: none; 
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Tool button selected state */
+        .tool-btn.tool-selected {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Color swatch selected state */
+        .color-swatch.color-swatch-selected {
+            outline: 3px solid #3b82f6; 
+            outline-offset: 2px;
+        }
+
+        /* Placement UI Overlays (Emoji/Text) */
+        .placement-ui {
+            position: absolute;
+            z-index: 100;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Emoji button style within the palette */
+        .emoji-option {
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .emoji-option:hover {
+            transform: scale(1.2);
+        }
+
+    </style>
+</head>
+<body class="selection:bg-purple-300 selection:text-gray-900">
+
+<button id="toggle-pad" class="fixed bottom-6 right-6 p-4 rounded-full bg-[var(--accent-color)] text-white shadow-lg hover:bg-purple-700 transition duration-300 z-[1050]" title="Toggle Interactive Pad/Notepad">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+</button>
+
+<div id="interactive-pad-container" class="hidden fixed shadow-2xl rounded-xl bg-white border-4 border-[var(--primary-color)] flex flex-col" style="min-height: 450px; max-height: 90vh; z-index: 1000;">
+    
+    <div id="pad-header" class="bg-[var(--primary-color)] p-3 flex justify-between items-center cursor-grab border-b border-gray-300 select-none">
+        <h3 class="font-bold text-white">✏️ Interactive Viewer Pad (Resizable!)</h3>
+        <button id="close-pad" class="text-white hover:text-red-300 transition" title="Close">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+    
+    <div class="bg-gray-50 p-2 flex flex-wrap justify-between items-center border-b border-gray-200">
+        <div class="flex items-center space-x-2 text-sm text-gray-600">
+            <span>Timezone:</span>
+            <select id="timezone-select" class="p-1 text-xs border rounded-md bg-white shadow-sm"></select>
+        </div>
+        <div id="current-time" class="font-mono font-bold text-xl text-[var(--accent-color)]">--:--:--</div>
+    </div>
+
+    <div class="p-3 border-b border-gray-200 flex flex-wrap gap-2 items-center justify-start">
+        
+        <label for="color-picker" class="text-sm font-medium text-gray-600 mr-2 hidden sm:block">Color:</label>
+        <input type="color" id="color-picker" class="w-8 h-8 rounded-full border-2 border-gray-400 hover:border-gray-600 cursor-pointer p-0" value="#9333ea">
+
+        <button data-color="#9333ea" class="color-swatch w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition color-swatch-selected" title="Purple"></button>
+        <button data-color="#000000" class="color-swatch w-6 h-6 rounded-full bg-black hover:scale-110 transition" title="Black"></button>
+        <button data-color="#10b981" class="color-swatch w-6 h-6 rounded-full bg-emerald-500 hover:scale-110 transition" title="Green"></button>
+
+        <button id="tool-pencil" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium flex items-center tool-selected" data-tool="pencil" title="Pencil Tool">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L15.232 5.232z"></path></svg>
+            Draw
+        </button>
+        <button id="tool-eraser" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium flex items-center hover:bg-gray-100" data-tool="eraser" title="Eraser Tool (White)">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Erase
+        </button>
+        
+        <button id="tool-emoji" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium hover:bg-gray-100 flex items-center" data-tool="emoji" title="Select and Insert an Emoji">
+            <span class="text-lg leading-none">😀</span>
+            Emoji
+        </button>
+
+        <button id="tool-type" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium hover:bg-gray-100 flex items-center" data-tool="type" title="Insert text at click position">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Type
+        </button>
+
+        <button id="clear-pad" class="p-2 px-3 text-sm bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition font-medium ml-auto">
+            Clear Pad
+        </button>
+    </div>
+
+    <div class="flex-grow relative overflow-hidden" style="flex-grow: 1;">
+        <canvas id="drawing-canvas" class="w-full h-full"></canvas>
+        
+        <div id="emoji-palette" class="placement-ui hidden">
+            <h4 class="font-bold text-gray-700 mb-3 text-center">Select an Emoji</h4>
+            <div id="emoji-options" class="grid grid-cols-6 gap-2">
+                <span class="emoji-option" data-emoji="🌟">🌟</span>
+                <span class="emoji-option" data-emoji="💡">💡</span>
+                <span class="emoji-option" data-emoji="💻">💻</span>
+                <span class="emoji-option" data-emoji="🎓">🎓</span>
+                <span class="emoji-option" data-emoji="🔬">🔬</span>
+                <span class="emoji-option" data-emoji="❤️">❤️</span>
+                <span class="emoji-option" data-emoji="🚀">🚀</span>
+                <span class="emoji-option" data-emoji="✅">✅</span>
+                <span class="emoji-option" data-emoji="❌">❌</span>
+            </div>
+        </div>
+        
+        <div id="text-input-overlay" class="placement-ui hidden flex-col">
+            <input type="text" id="text-input" placeholder="Type text here..." class="p-2 border rounded-md text-sm mb-3 w-full">
+            <button id="confirm-text-btn" class="py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition">Insert Text</button>
+        </div>
+    </div>
+</div>
+
+<header class="p-6 md:px-16 flex justify-between items-center bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-purple-200/50">
+    <div class="text-2xl font-extrabold tracking-wider text-[var(--primary-color)]">Sabrina Sultana<span class="text-[var(--accent-color)]">.</span></div>
+    <nav class="hidden md:flex space-x-8 text-lg font-medium">
+        <a href="#hero" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Home</a>
+        <a href="#about" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">About</a>
+        <a href="#skills" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Skills</a>
+        <a href="#projects" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Projects</a>
+        <a href="#live-demo" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Live Demos</a>
+        <a href="#games" class="text-[var(--primary-color)] font-extrabold hover:text-[var(--accent-color)] transition duration-300">Games</a> 
+        <a href="#credentials" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Credentials</a>
+        <a href="#contact" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Contact</a>
+    </nav>
+    <button class="md:hidden text-purple-800 text-2xl">&#9776;</button>
+</header>
+
+<section id="hero" class="flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 min-h-[calc(100vh-80px)]">
+    <div class="w-full md:w-1/2 hero-text mt-12 md:mt-0 space-y-4">
+        <h3 class="text-xl md:text-2xl font-medium text-gray-600">Hello, It's Me</h3>
+        <h1 class="text-5xl md:text-8xl font-black leading-tight">Sabrina Sultana</h1>
+        <div class="text-2xl md:text-4xl font-semibold flex flex-wrap mb-6 justify-center md:justify-start">
+            <span class="text-gray-800 mr-2">And I'm</span>
+            <span id="typing-text" class="text-[var(--accent-color)]"></span><span class="typing-cursor"></span>
+        </div>
+        <p class="text-base md:text-lg text-gray-700 max-w-lg leading-relaxed md:text-left mx-auto md:mx-0">
+            With expertise in computer vision, image processing, and bioinformatics, I bring over 2 years of experience developing intelligent systems, medical imaging solutions, and AI-powered applications.
+        </p>
+    </div>
+    <div class="w-full md:w-1/2 flex justify-center md:justify-end">
+        <div class="profile-ring-container">
+            <img 
+                src="https://placehold.co/400x400/9333ea/ffffff?text=Profile" 
+                alt="Sabrina Sultana Professional Photo" 
+                class="rounded-full w-72 h-72 md:w-96 md:h-96 object-cover" 
+            />
+        </div>
+    </div>
+</section>
+
+<section id="about" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
+    <h2 class="section-title text-center mb-12">🪄 About Me</h2>
+    <div class="mt-8 max-w-4xl mx-auto text-gray-700 text-lg space-y-5 p-6 bg-white/50 rounded-xl shadow-inner">
+        <p>🎓 I am currently pursuing a **Bachelor of Science in Computer Science & Engineering** at Brac University, Dhaka, Bangladesh.</p>
+        <p>🔬 My thesis focuses on developing a **Privacy-Preserving Hybrid Deep Learning Framework** for Skin Disease Detection & Clinical Decision Support, combining U-Net, Transformers, and Federated Learning concepts.</p>
+        <p>🧠 My core research interests span **U-Net + Transformers**, Multimodal AI, MAMBA, Federated Learning, and the intersection of **AI & Bioinformatics**.</p>
+        <p>💡 My primary goal is to build intelligent, reliable systems centered around **Privacy**, **Explainability (XAI)**, and impactful **real-world medical AI applications**.</p>
+    </div>
+</section>
+
+<section id="skills" class="px-6 md:px-16 py-20 bg-white/40 border-t border-purple-200/50">
+    <h2 class="section-title text-center mb-12">⚙️ Skills & Tools</h2>
+    <div id="skill-container" class="skill-container grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-8 mt-8 max-w-6xl mx-auto justify-items-center">
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=python" class="w-14 h-14 mb-2" alt="Python"/>
+            <span class="text-sm text-gray-700 font-medium">Python</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=pytorch" class="w-14 h-14 mb-2" alt="PyTorch"/>
+            <span class="text-sm text-gray-700 font-medium">PyTorch</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=tensorflow" class="w-14 h-14 mb-2" alt="TensorFlow"/>
+            <span class="text-sm text-gray-700 font-medium">TensorFlow</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=opencv" class="w-14 h-14 mb-2" alt="OpenCV"/>
+            <span class="text-sm text-gray-700 font-medium">OpenCV</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=scikitlearn" class="w-14 h-14 mb-2" alt="Scikit-learn"/>
+            <span class="text-sm text-gray-700 font-medium">Sklearn</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=js" class="w-14 h-14 mb-2" alt="JavaScript"/>
+            <span class="text-sm text-gray-700 font-medium">JavaScript</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=java" class="w-14 h-14 mb-2" alt="Java"/>
+            <span class="text-sm text-gray-700 font-medium">Java</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=aws" class="w-14 h-14 mb-2" alt="AWS"/>
+            <span class="text-sm text-gray-700 font-medium">AWS</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=git" class="w-14 h-14 mb-2" alt="Git"/>
+            <span class="text-sm text-gray-700 font-medium">Git</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=linux" class="w-14 h-14 mb-2" alt="Linux"/>
+            <span class="text-sm text-gray-700 font-medium">Linux</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=html" class="w-14 h-14 mb-2" alt="HTML"/>
+            <span class="text-sm text-gray-700 font-medium">HTML</span>
+        </div>
+        <div class="flex flex-col items-center skill-item" draggable="true">
+            <img src="https://skillicons.dev/icons?i=css" class="w-14 h-14 mb-2" alt="CSS"/>
+            <span class="text-sm text-gray-700 font-medium">CSS</span>
+        </div>
+    </div>
+</section>
+
+<section id="projects" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
+    <h2 class="section-title text-center mb-12">💡 Featured Projects & Research</h2>
+    <div id="project-container" class="project-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 max-w-5xl mx-auto">
+        <div class="professional-card" draggable="true" data-id="project-1">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🩺 Privacy-Preserving Skin Disease Detection</h3>
+            <p class="text-sm text-gray-500 mb-3">Thesis Project | AI/ML, Federated Learning</p>
+            <p class="text-gray-700 grow">Explores U-Net + Transformer architectures and multimodal learning with federated privacy for secure medical AI development.</p>
+            <p class="mt-4 text-[var(--accent-color)] font-semibold">Status: In Development</p>
+        </div>
+        <div class="professional-card" draggable="true" data-id="project-2">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🧠 Real-Time Emotion Detector</h3>
+            <p class="text-sm text-gray-500 mb-3">Computer Vision, CNN</p>
+            <p class="text-gray-700 grow">Detects human emotions from live video streams using a Convolutional Neural Network and Facial Landmark recognition.</p>
+            <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Live Demo Below ↓</a>
+        </div>
+        <div class="professional-card" draggable="true" data-id="project-3">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🎶 Music Cloud Platform Clone</h3>
+            <p class="text-sm text-gray-500 mb-3">Full-stack Web Development</p>
+            <p class="text-gray-700 grow">A robust, full-stack web application inspired by Spotify, demonstrating competence in backend services and modern frontend frameworks.</p>
+            <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Live Demo Below ↓</a>
+        </div>
+        <div class="professional-card" draggable="true" data-id="project-4">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🔬 Diffusion-Based MRI Enhancement</h3>
+            <p class="text-sm text-gray-500 mb-3">AI/ML, Generative Models</p>
+            <p class="text-gray-700 grow">Implemented a Diffusion Model to significantly enhance the resolution and clarity of low-quality MRI scans for better diagnostic outcomes.</p>
+            <a href="#" target="_blank" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Code →</a>
+        </div>
+        <div class="professional-card" draggable="true" data-id="project-5">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🐍 Python Bioinformatics Toolkit</h3>
+            <p class="text-sm text-gray-500 mb-3">Bioinformatics, Data Analysis</p>
+            <p class="text-gray-700 grow">Developed a suite of Python scripts for common tasks like sequence alignment, gene expression analysis, and data visualization.</p>
+            <a href="#" target="_blank" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Code →</a>
+        </div>
+        <div class="professional-card" draggable="true" data-id="project-6">
+            <h3 class="text-xl font-bold text-[var(--primary-color)]">🎮 Dino Game Clone (JS)</h3>
+            <p class="text-sm text-gray-500 mb-3">Web Development, JavaScript</p>
+            <p class="text-gray-700 grow">Classic T-Rex runner clone built entirely with HTML, CSS, and vanilla JavaScript to demonstrate core programming logic.</p>
+            <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">Play Live Below ↓</a>
+        </div>
+    </div>
+    <div class="mt-12 text-center text-gray-600">
+        <p class="text-lg">For a complete list of all repositories, please visit my <a href="https://github.com/Sabrina-Sultana13" target="_blank" class="text-[var(--accent-color)] hover:underline font-semibold">GitHub profile</a>.</p>
+    </div>
+</section>
+
+<section id="live-demo" class="px-6 md:px-16 py-20 bg-white/70 border-y border-purple-200/50">
+    <h2 class="section-title text-center mb-6">💻 Interactive Live Demos</h2>
+    <p class="text-center text-gray-600 mb-8 max-w-5xl mx-auto">
+        Experience three of my key utility projects live here. **Drag and drop these cards to reorder them!** All embedded websites are responsive.
+    </p>
+    <div id="live-demo-container" class="live-demo-container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-1">
+            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🦖 Dino Game Clone</h3>
+            <iframe class="live-demo-iframe" 
+                    src="https://dinooooo.vercel.app/" 
+                    title="Live Dino Game Clone Demo" 
+                    loading="lazy">
+            </iframe>
+        </div>
+
+        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-2">
+            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🧠 Real-Time Emotion Detector</h3>
+            <iframe class="live-demo-iframe" 
+                    src="https://emotion-detector-six.vercel.app/" 
+                    title="Live Emotion Detector Demo" 
+                    loading="lazy">
+            </iframe>
+        </div>
+        
+        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-3">
+            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🎶 Music Cloud Platform Clone</h3>
+            <iframe class="live-demo-iframe" 
+                    src="https://clone-spotify-2-2.vercel.app/" 
+                    title="Live Music Cloud Platform Demo" 
+                    loading="lazy">
+            </iframe>
+        </div>
+        
+    </div>
+</section>
+
+<section id="games" class="px-6 md:px-16 py-20 bg-white/70 border-y border-purple-200/50">
+    <h2 class="section-title text-center mb-6">🎮 Galactic Game Hub </h2>
+    <p class="text-center text-gray-600 mb-8 max-w-5xl mx-auto">
+        Play your favourite game.
+    </p>
+    <div id="games-container" class="live-demo-container games-container max-w-7xl mx-auto grid grid-cols-1 gap-8">
+        
+        <div class="live-demo-item professional-card p-4 col-span-1 md:col-span-2 lg:col-span-3" draggable="true" data-id="game-2">
+            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🚀 Galactic Game Hub</h3>
+            <iframe class="live-demo-iframe" 
+                    src="https://galactic-game-hub.vercel.app/" 
+                    title="Galactic Game Hub Demo" 
+                    loading="lazy">
+            </iframe>
+        </div>
+        
+    </div>
+</section>
+<section id="credentials" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
+    <h2 class="section-title text-center mb-12">🎖️ Credentials & Awards</h2>
+    <div class="max-w-4xl mx-auto text-center text-gray-600 text-lg p-6 professional-card">
+        <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3">Education & Certifications</h3>
+        <ul class="list-disc list-inside space-y-2 mx-auto inline-block text-left">
+            <li><b>Brac University:</b> BSc in Computer Science & Engineering (Expected 2026)</li>
+            <li><b>DataCamp:</b> <a href="https://www.datacamp.com/certificate/DAA0015011142645" target="_blank" class="text-[var(--accent-color)] hover:underline">Data Analyst with Python</a></li>
+            <li><b>DataCamp:</b> <a href="https://www.datacamp.com/certificate/DSA0012283999725" target="_blank" class="text-[var(--accent-color)] hover:underline">Data Scientist with Python</a></li>
+        </ul>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
+    
+    <div class="max-w-4xl mx-auto text-center space-y-12">
+        <!-- Social Media Links (Secondary) -->
+        <div class="pt-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-8">Find Me On Other Platforms</h3>
+            <div class="flex flex-wrap justify-center gap-16">
+                
+                <!-- Simple Envelope Icon for Email -->
+                <a href="mailto:sabrina.sultana1@g.bracu.ac.bd" target="_blank" class="hover:scale-110 transition transform group">
+                    <svg class="w-10 h-10 text-gray-600 group-hover:text-[var(--accent-color)] transition-colors" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>
+                    <span class="sr-only">Email</span>
+                </a>
+
+                <!-- LinkedIn Icon -->
+                <a href="https://linkedin.com/in/sabrina-sultana" target="_blank" class="hover:scale-110 transition transform group">
+                    <svg class="w-10 h-10 text-gray-600 group-hover:text-[var(--accent-color)] transition-colors" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.264-4 0v5.604h-3v-11h3v1.765c1.396-2.584 7-2.761 7 2.474v6.761z"/></svg>
+                    <span class="sr-only">LinkedIn</span>
+                </a>
+                
+                <!-- GitHub Icon -->
+                <a href="https://github.com/Sabrina-Sultana13" target="_blank" class="hover:scale-110 transition transform group">
+                    <svg class="w-10 h-10 text-gray-600 group-hover:text-[var(--accent-color)] transition-colors" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.349 3.432 9.88 8.232 11.42.6.111.828-.242.828-.538 0-.265-.009-.971-.015-1.994-3.337.724-4.042-1.61-4.042-1.61C4.417 19.124 3.65 18.258 3.65 18.258c-1.087-.731.084-.717.084-.717 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.493.998.108-.77.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.31.469-2.381 1.236-3.221-.124-.305-.537-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.398 3.003-.404 1.02.006 2.045.138 3.003.404 2.292-1.552 3.299-1.23 3.299-1.23.654 1.652.241 2.871.118 3.176.766.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.922.43.37.823 1.102.823 2.222l-.014 3.39c0 .324.217.697.835.538C20.577 21.889 24 17.349 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                    <span class="sr-only">GitHub</span>
+                </a>
+                
+                <!-- Simple 'G' Icon for Kaggle (using Google icon for visual consistency) -->
+                <a href="https://kaggle.com/sabrina13" target="_blank" class="hover:scale-110 transition transform group">
+                    <svg class="w-10 h-10 text-[var(--primary-color)] group-hover:text-[var(--accent-color)] transition-colors" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M495.9 241.6h-13.6C449.2 133.5 352 50.8 243.2 50.8 116.4 50.8 13.9 153.2 13.9 280s102.5 229.2 229.3 229.2c74.2 0 137.9-32.1 182.2-85.1l-61.9-48.4c-28.7 30.2-66.7 48.7-120.3 48.7-78.5 0-137.5-62.7-137.5-139.6s59-139.6 137.5-139.6c43.3 0 83.2 17.2 108.9 49.6l-133.4 103.5h277.8c11-73.6-7.8-152.1-41.1-230.1z"/></svg>
+                    <span class="sr-only">Kaggle (using Google icon for visual consistency)</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer / Quote -->
+<section class="py-16 text-center text-gray-700 bg-white/40 border-t border-purple-200/50">
+    <p class="italic text-xl max-w-2xl mx-auto">“Building intelligent systems that serve humanity through innovation and responsibility.”</p>
+    <p class="mt-4 font-extrabold text-lg text-[var(--primary-color)]">— Sabrina Sultana</p>
+    <p class="text-sm mt-8 text-gray-500">&copy; 2025 Sabrina Sultana. All rights reserved.</p>
+</section>
+<script>
+    // --- Typing Effect Logic ---
+    const roles = ["an AI Engineer", "a Computer Vision Researcher", "a Full-Stack Developer", "an Aspiring Data Scientist"];
+    let roleIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const typingSpeed = 150;
+    const deletingSpeed = 80;
+    const delayBeforeTyping = 1000;
+    const delayBeforeDeleting = 2000;
+    const typingTextElement = document.getElementById('typing-text');
+
+    function typeEffect() {
+        const currentRole = roles[roleIndex];
+        const fullTextLength = currentRole.length;
+
+        if (isDeleting) {
+            charIndex--;
+            typingTextElement.textContent = currentRole.substring(0, charIndex);
+        } else {
+            charIndex++;
+            typingTextElement.textContent = currentRole.substring(0, charIndex);
+        }
+
+        let speed = isDeleting ? deletingSpeed : typingSpeed;
+
+        if (!isDeleting && charIndex === fullTextLength) {
+            speed = delayBeforeDeleting;
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            roleIndex = (roleIndex + 1) % roles.length;
+            speed = delayBeforeTyping;
+        }
+
+        setTimeout(typeEffect, speed);
+    }
+
+    // Start the typing effect when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        typeEffect();
+        initializeDragAndDrop();
+        initializeInteractivePad();
+    });
+
+    // --- Drag and Drop Logic (Includes Projects, Live Demos, Games, and Skills) ---
+
+    function initializeDragAndDrop() {
+        // Updated to include all relevant containers
+        const containers = document.querySelectorAll('#project-container, #live-demo-container, #games-container, #skill-container');
+        let draggedItem = null;
+
+        containers.forEach(container => {
+            container.addEventListener('dragstart', (e) => {
+                // Ensure only the direct child (the card or item) is dragged
+                let target = e.target;
+                while (target && target.parentElement !== container) {
+                    target = target.parentElement;
+                }
+                if (target && target.hasAttribute('draggable')) {
+                    draggedItem = target;
+                    setTimeout(() => {
+                        draggedItem.classList.add('dragging');
+                    }, 0);
+                    e.dataTransfer.setData('text/plain', target.dataset.id || 'drag-item');
+                } else {
+                    e.preventDefault(); // Do not allow dragging of non-card elements
+                }
+            });
+
+            container.addEventListener('dragend', () => {
+                if (draggedItem) {
+                    draggedItem.classList.remove('dragging');
+                    draggedItem = null;
+                }
+                container.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Necessary to allow drop
+                if (!draggedItem || draggedItem.parentElement !== container) return;
+
+                const afterElement = getDragAfterElement(container, e.clientY, e.clientX);
+                const currentChildren = Array.from(container.children).filter(child => child.hasAttribute('draggable'));
+
+                // Visual feedback
+                currentChildren.forEach(child => child.classList.remove('drag-over'));
+                if (afterElement == null) {
+                    // Placing at the end
+                    if (currentChildren.length > 0 && currentChildren[currentChildren.length - 1] !== draggedItem) {
+                         currentChildren[currentChildren.length - 1].classList.add('drag-over');
+                    }
+                } else if (afterElement !== draggedItem) {
+                    // Placing before another element
+                    afterElement.classList.add('drag-over');
+                }
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+
+                if (draggedItem && draggedItem.parentElement === container) {
+                    const afterElement = getDragAfterElement(container, e.clientY, e.clientX);
+                    if (afterElement == null) {
+                        container.appendChild(draggedItem);
+                    } else {
+                        container.insertBefore(draggedItem, afterElement);
+                    }
+                }
+            });
+        });
+
+        function getDragAfterElement(container, y, x) {
+            const draggableElements = Array.from(container.querySelectorAll('.professional-card:not(.dragging), .skill-item:not(.dragging)'));
+
+            return draggableElements.reduce((closest, child) => {
+                const rect = child.getBoundingClientRect();
+                let distance;
+
+                if (container.id === 'skill-container') {
+                    // For skills, check horizontal (x) position
+                    const childCenterX = rect.left + rect.width / 2;
+                    distance = x - childCenterX;
+                    if (distance < 0 && distance > closest.distance) {
+                        return { distance: distance, element: child };
+                    }
+                } else {
+                    // For projects/demos/games, check vertical (y) position
+                    const offset = y - rect.top - rect.height / 2; // Check center of the element
+                    if (offset < 0 && offset > closest.distance) {
+                        return { distance: offset, element: child };
+                    }
+                }
+                return closest;
+            }, { distance: -Infinity }).element;
+        }
+    }
+
+    // --- Interactive Pad Logic (Fixed and Improved) ---
+
+    function initializeInteractivePad() {
+        const padContainer = document.getElementById('interactive-pad-container');
+        const padHeader = document.getElementById('pad-header');
+        const togglePadBtn = document.getElementById('toggle-pad');
+        const closePadBtn = document.getElementById('close-pad');
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('color-picker');
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        const toolButtons = document.querySelectorAll('.tool-btn');
+        const clearPadBtn = document.getElementById('clear-pad');
+        const emojiPalette = document.getElementById('emoji-palette');
+        const emojiOptions = document.getElementById('emoji-options');
+        const textInputOverlay = document.getElementById('text-input-overlay');
+        const confirmTextBtn = document.getElementById('confirm-text-btn');
+
+        let isDragging = false;
+        let activeTool = 'pencil'; // Default tool
+        let currentColor = colorPicker.value;
+        let lastX, lastY;
+        let isDrawing = false;
+        let padX = 0, padY = 0;
+
+        // Tool Settings
+        const toolSettings = {
+            pencil: { size: 5, color: currentColor },
+            eraser: { size: 20, color: '#ffffff' }, 
+            emoji: { size: 30, color: '#000000' },
+            type: { size: 16, color: '#000000' }
+        };
+
+        // --- Canvas Initialization & Resizing ---
+        function resizeCanvas() {
+            // Set canvas drawing dimensions to match the container's *current* size
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            // Optional: Restore drawing context settings after resize
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+        resizeCanvas();
+        // Use a MutationObserver or ResizeObserver to detect size changes
+        new ResizeObserver(resizeCanvas).observe(canvas.parentElement);
+
+
+        // --- Pad Visibility and Positioning (Drag Logic) ---
+
+        togglePadBtn.addEventListener('click', () => {
+            padContainer.classList.toggle('hidden');
+        });
+
+        closePadBtn.addEventListener('click', () => {
+            padContainer.classList.add('hidden');
+        });
+
+        // Make Pad Draggable
+        padHeader.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
+
+        padHeader.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            dragStart(e.touches[0]);
+        });
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) dragMove(e.touches[0]);
+        }, { passive: false });
+        document.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+            isDragging = true;
+            const style = window.getComputedStyle(padContainer);
+            // Get current positional values, handling 'auto' from transform: translate
+            // We use clientX/Y from the event to calculate the offset from the top-left of the pad
+            const rect = padContainer.getBoundingClientRect();
+            padX = e.clientX - rect.left;
+            padY = e.clientY - rect.top;
+            
+            // Set position to absolute coordinates to disable CSS centering/transform
+            padContainer.style.left = rect.left + 'px';
+            padContainer.style.top = rect.top + 'px';
+            padContainer.style.transform = 'none'; 
+            
+            padHeader.style.cursor = 'grabbing';
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            
+            let newLeft = e.clientX - padX;
+            let newTop = e.clientY - padY;
+
+            // Simple boundary constraints
+            newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - padContainer.offsetWidth));
+            newTop = Math.max(0, Math.min(newTop, window.innerHeight - padContainer.offsetHeight));
+
+
+            padContainer.style.left = newLeft + 'px';
+            padContainer.style.top = newTop + 'px';
+        }
+
+        function dragEnd() {
+            isDragging = false;
+            padHeader.style.cursor = 'grab';
+        }
+
+        // --- Tool & Color Handlers ---
+
+        function updateColor(color) {
+            currentColor = color;
+            toolSettings.pencil.color = currentColor;
+            toolSettings.type.color = currentColor; // Also update text color
+            colorPicker.value = currentColor;
+            colorSwatches.forEach(swatch => {
+                if (swatch.dataset.color === color) {
+                    swatch.classList.add('color-swatch-selected');
+                } else {
+                    swatch.classList.remove('color-swatch-selected');
+                }
+            });
+        }
+
+        colorPicker.addEventListener('input', (e) => {
+            updateColor(e.target.value);
+            colorSwatches.forEach(swatch => swatch.classList.remove('color-swatch-selected'));
+        });
+
+        colorSwatches.forEach(swatch => {
+            swatch.addEventListener('click', () => updateColor(swatch.dataset.color));
+        });
+
+        // Tool selector
+        toolButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeTool = btn.dataset.tool;
+                toolButtons.forEach(b => b.classList.remove('tool-selected'));
+                btn.classList.add('tool-selected');
+                
+                // Hide overlays when switching tools
+                emojiPalette.classList.add('hidden');
+                textInputOverlay.classList.add('hidden');
+            });
+        });
+
+        clearPadBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // --- Canvas Drawing Implementation ---
+
+        function drawLine(x1, y1, x2, y2, size, color) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = size;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round'; 
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', drawing);
+        document.addEventListener('mouseup', stopDrawing); 
+        canvas.addEventListener('mouseout', () => {
+            if (activeTool === 'pencil' || activeTool === 'eraser') isDrawing = false;
+        }); 
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (activeTool === 'pencil' || activeTool === 'eraser') e.preventDefault();
+            startDrawing(e.touches[0]);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            if (activeTool === 'pencil' || activeTool === 'eraser') e.preventDefault();
+            drawing(e.touches[0]);
+        }, { passive: false });
+        document.addEventListener('touchend', stopDrawing);
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            const { x, y } = getMousePos(e);
+
+            if (activeTool === 'pencil' || activeTool === 'eraser') {
+                isDrawing = true;
+                [lastX, lastY] = [x, y];
+                // Draw a dot on mousedown for better start
+                const tool = activeTool === 'pencil' ? toolSettings.pencil : toolSettings.eraser;
+                drawLine(x, y, x, y, tool.size, tool.color); 
+            } else if (activeTool === 'emoji') {
+                showEmojiPalette(x, y);
+            } else if (activeTool === 'type') {
+                showTextInputOverlay(x, y);
+            }
+        }
+
+        function drawing(e) {
+            if (!isDrawing) return;
+            
+            const { x, y } = getMousePos(e);
+            
+            const tool = activeTool === 'pencil' ? toolSettings.pencil : toolSettings.eraser;
+            drawLine(lastX, lastY, x, y, tool.size, tool.color);
+            
+            [lastX, lastY] = [x, y];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        // --- Emoji Placement ---
+
+        let emojiX, emojiY;
+
+        function showEmojiPalette(x, y) {
+            emojiX = x;
+            emojiY = y;
+            
+            // Position overlay relative to canvas container (parent of canvas)
+            // Use the position relative to the parent div (.flex-grow)
+            emojiPalette.style.left = `${x}px`;
+            emojiPalette.style.top = `${y}px`;
+
+            // Adjust position to keep the palette visible if near the edge
+            const paletteRect = emojiPalette.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            if (x + paletteRect.width > canvasRect.width) {
+                 emojiPalette.style.left = `${x - paletteRect.width}px`;
+            }
+
+            emojiPalette.classList.remove('hidden');
+        }
+
+        emojiOptions.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji-option')) {
+                const emoji = e.target.dataset.emoji;
+                drawEmoji(emoji, emojiX, emojiY);
+                emojiPalette.classList.add('hidden');
+            }
+        });
+
+        function drawEmoji(emoji, x, y) {
+            ctx.font = `${toolSettings.emoji.size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, x, y);
+        }
+        
+        // --- Text Placement ---
+
+        let textX, textY;
+
+        function showTextInputOverlay(x, y) {
+            textX = x;
+            textY = y;
+            // Position overlay relative to canvas container (parent of canvas)
+            textInputOverlay.style.left = `${x}px`;
+            textInputOverlay.style.top = `${y}px`;
+            textInputOverlay.classList.remove('hidden');
+            document.getElementById('text-input').focus();
+        }
+
+        confirmTextBtn.addEventListener('click', () => {
+            const textInput = document.getElementById('text-input');
+            const text = textInput.value.trim();
+            if (text) {
+                drawText(text, textX, textY, toolSettings.type.color);
+                textInput.value = ''; // Clear input
+            }
+            textInputOverlay.classList.add('hidden');
+        });
+
+        function drawText(text, x, y, color) {
+            ctx.font = `${toolSettings.type.size}px Inter, sans-serif`;
+            ctx.fillStyle = color;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(text, x, y);
+        }
+
+        // --- Timezone and Clock ---
+
+        const timezoneSelect = document.getElementById('timezone-select');
+        const currentTimeDisplay = document.getElementById('current-time');
+
+        const timezones = [
+            { name: "Dhaka (BDT)", offset: 6 },
+            { name: "London (GMT)", offset: 0 },
+            { name: "New York (EST)", offset: -5 },
+            { name: "Tokyo (JST)", offset: 9 },
+            { name: "Sydney (AEST)", offset: 10 }
+        ];
+
+        timezones.forEach(tz => {
+            const option = document.createElement('option');
+            option.value = tz.offset;
+            option.textContent = tz.name;
+            if (tz.name.includes("Dhaka")) { // Set a default/preferred timezone
+                option.selected = true;
+            }
+            timezoneSelect.appendChild(option);
+        });
+
+        function updateClock() {
+            const now = new Date();
+            // Calculate UTC time in milliseconds
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            
+            // Get selected offset in hours
+            const offsetHours = parseInt(timezoneSelect.value);
+            
+            // Calculate target time
+            const targetTime = new Date(utc + (3600000 * offsetHours));
+
+            const hours = targetTime.getHours().toString().padStart(2, '0');
+            const minutes = targetTime.getMinutes().toString().padStart(2, '0');
+            const seconds = targetTime.getSeconds().toString().padStart(2, '0');
+
+            currentTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        timezoneSelect.addEventListener('change', updateClock);
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+    }
+</script>
+</body>
+</html>
