@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,17 +10,33 @@
     <style>
         /* Define color variables for easy theming */
         :root {
+            /* Light Mode Variables (Default) */
             --primary-color: #4B0082; /* Deep Indigo/Violet for main headings */
             --accent-color: #9333ea; /* Bright, modern purple for links/accents */
             --bg-color: #F8F4FF; /* Very light lavender/off-white background */
             --card-bg: #FFFFFF; /* Pure white for card backgrounds */
+            --text-color: #1f2937; /* Dark text */
+            --header-bg: #FFFFFF; /* Header background in light mode */
+            --subtle-bg: #F0F0F0; /* Used for subtle section/input backgrounds in light mode */
+        }
+
+        /* Dark Mode Variables - Use higher contrast colors */
+        .dark {
+            --primary-color: #d8b4fe; /* Lighter purple for headings */
+            --accent-color: #c084fc; /* Slightly brighter purple */
+            --bg-color: #111827; /* Darkest gray/blue background */
+            --card-bg: #1f2937; /* Darker card backgrounds */
+            --text-color: #e5e7eb; /* Light gray text */
+            --header-bg: #1f2937; /* Header background in dark mode */
+            --subtle-bg: #374151; /* Used for subtle section/input backgrounds in dark mode */
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color); 
-            color: #1f2937; /* Darker text for contrast */
+            color: var(--text-color); /* Use variable for text color */
             min-height: 100vh;
+            transition: background-color 0.5s, color 0.5s; /* Smooth transition */
         }
 
         /* Hero Text Styling */
@@ -44,7 +60,7 @@
 
         /* Section Titles */
         .section-title {
-            font-size: 2.5rem; /* Slightly larger titles */
+            font-size: 2.5rem; 
             font-weight: 800;
             color: var(--primary-color);
             line-height: 1.1;
@@ -55,44 +71,39 @@
             background-color: var(--card-bg);
             border-radius: 1rem;
             padding: 1.5rem;
-            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-            box-shadow: 0 4px 10px rgba(75, 0, 130, 0.08); /* Soft initial shadow */
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background-color 0.5s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
             display: flex; 
             flex-direction: column;
-            cursor: grab; /* Indicate draggable item */
+            cursor: grab; 
             min-height: 250px; 
             height: 100%;
+            color: var(--text-color); /* Ensure card text uses the variable */
+        }
+        .dark .professional-card {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
         .professional-card:hover {
-            transform: translateY(-8px); /* Lift higher on hover */
-            box-shadow: 0 15px 25px rgba(75, 0, 130, 0.15); /* Deeper shadow on hover */
+            transform: translateY(-8px); 
+            box-shadow: 0 15px 25px rgba(75, 0, 130, 0.15); 
+        }
+        .dark .professional-card:hover {
+            box-shadow: 0 15px 25px rgba(192, 132, 252, 0.25); 
         }
         
-        /* Dragging state styling for Projects & Demos */
-        .professional-card.dragging, .live-demo-item.dragging, .skill-item.dragging {
-            opacity: 0.5;
-            border: 2px dashed var(--accent-color);
-        }
-        
-        /* Drop target feedback for Projects & Demos/Games */
+        /* Drop target feedback */
         .project-container .drag-over, .live-demo-container .drag-over, .games-container .drag-over {
             box-shadow: 0 0 0 4px var(--accent-color) inset;
-            background-color: var(--bg-color);
+            background-color: var(--subtle-bg);
         }
 
         /* Skill Item Styling for drag feedback */
-        .skill-item {
-            transition: transform 0.1s ease-out;
-            cursor: grab;
-            padding: 0.5rem; 
-            border-radius: 0.5rem;
-        }
         .skill-container .drag-over {
             box-shadow: 0 0 0 3px var(--accent-color) inset;
-            background-color: #EDE8F5; /* A slightly darker background hint */
+            background-color: var(--subtle-bg); 
         }
 
-        /* Profile Image Ring Effect (Clean & Subtle) */
+        /* Profile Image Ring Effect */
         .profile-ring-container {
             border: 4px solid var(--accent-color);
             padding: 5px;
@@ -101,146 +112,135 @@
             transition: all 0.5s ease;
         }
         
-        /* Style for the embedded live demo iframe container */
-        .live-demo-item {
-            cursor: grab; /* Override professional-card cursor for specific demo items */
-        }
-        
-        /* Style for the embedded live demo iframe - Ensures responsiveness */
+        /* Style for the embedded live demo iframe */
         .live-demo-iframe {
-            width: 100%;
-            /* INCREASED HEIGHT FOR GAMES AND LIVE DEMOS */
-            height: 70vh; 
+            background-color: var(--card-bg);
             border: 4px solid var(--accent-color);
-            border-radius: 1rem;
-            box-shadow: 0 5px 15px rgba(75, 0, 130, 0.1);
-            background-color: white;
-            overflow: hidden;
-            max-width: 100%; 
-            display: block; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            /* Important: Ensures the iframe fills the card space and maintains aspect ratio within flex container */
+            flex-grow: 1; 
+            width: 100%;
+        }
+        .dark .live-demo-iframe {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
         }
         
-        /* --- INTERACTIVE PAD STYLES (Resizable Window) --- */
+        /* --- INTERACTIVE PAD STYLES (Adjusted for Dark Mode) --- */
 
-        /* Positioning for the draggable/resizable pad */
         #interactive-pad-container {
-            /* Initial centered position, overridden by JS dragging/resizing */
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            /* INCREASED INITIAL WIDTH AND MAX-WIDTH to make it prominently large */
-            width: 80vw;
-            max-width: 50rem; /* Tailwind 'max-w-3xl' equivalent */
-            min-width: 350px;
-            min-height: 400px; 
-            z-index: 1000;
-            /* The key for resizing the pad "window" */
-            resize: both; 
-            overflow: auto;
+            border-color: var(--primary-color) !important;
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            transition: all 0.5s;
         }
-        
-        /* Header style for drag handle */
         #pad-header {
-            cursor: grab; 
-            touch-action: none; /* Prevent browser touch behavior interference */
+            background-color: var(--primary-color) !important;
+            color: white !important;
         }
         
         /* Canvas styling */
         #drawing-canvas {
-            background-color: #ffffff; 
-            touch-action: none; 
-            width: 100%;
-            height: 100%;
+            background-color: var(--card-bg); 
+        }
+        .dark #drawing-canvas {
+             background-color: #374151; /* Specific dark background for drawing */
         }
 
-        /* Tool button selected state */
+        /* Tool button styling */
+        .tool-btn {
+             color: var(--text-color);
+             border-color: var(--subtle-bg);
+             background-color: transparent;
+             transition: all 0.3s;
+        }
+        .tool-btn:hover {
+             background-color: var(--subtle-bg);
+        }
         .tool-btn.tool-selected {
             background-color: var(--accent-color);
             color: white;
             border-color: var(--accent-color);
         }
-
-        /* Color swatch selected state */
-        .color-swatch.color-swatch-selected {
-            outline: 3px solid #3b82f6; 
-            outline-offset: 2px;
-        }
-
+        
         /* Placement UI Overlays (Emoji/Text) */
         .placement-ui {
-            position: absolute;
-            z-index: 100;
-            background: white;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: var(--card-bg);
             border: 1px solid var(--accent-color);
         }
-
-        /* Emoji button style within the palette */
-        .emoji-option {
-            font-size: 2rem;
-            cursor: pointer;
-            transition: transform 0.1s;
+        #text-input {
+            background-color: var(--subtle-bg);
+            color: var(--text-color);
         }
-        .emoji-option:hover {
-            transform: scale(1.2);
+
+        /* Header specific styling for the theme */
+        header {
+            background-color: var(--header-bg);
+            border-bottom-color: var(--primary-color);
+            transition: background-color 0.5s;
+        }
+        header a {
+            color: var(--text-color);
+        }
+        
+        /* Theme toggle button specific styling */
+        #theme-toggle-top {
+            color: var(--text-color);
         }
 
     </style>
 </head>
 <body class="selection:bg-purple-300 selection:text-gray-900">
 
-<button id="toggle-pad" class="fixed bottom-6 right-6 p-4 rounded-full bg-[var(--accent-color)] text-white shadow-lg hover:bg-purple-700 transition duration-300 z-[1050]" title="Toggle Interactive Pad/Notepad">
+<button id="toggle-pad" class="fixed bottom-6 right-6 p-4 rounded-full bg-[var(--accent-color)] text-white shadow-lg hover:opacity-80 transition duration-300 z-[1050]" title="Toggle Interactive Pad/Notepad">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
 </button>
 
-<div id="interactive-pad-container" class="hidden fixed shadow-2xl rounded-xl bg-white border-4 border-[var(--primary-color)] flex flex-col" style="min-height: 450px; max-height: 90vh; z-index: 1000;">
+<div id="interactive-pad-container" class="hidden fixed shadow-2xl rounded-xl border-4 flex flex-col" style="min-height: 450px; max-height: 90vh; z-index: 1000;">
     
-    <div id="pad-header" class="bg-[var(--primary-color)] p-3 flex justify-between items-center cursor-grab border-b border-gray-300 select-none">
-        <h3 class="font-bold text-white">✏️ Interactive Viewer Pad (Resizable!)</h3>
-        <button id="close-pad" class="text-white hover:text-red-300 transition" title="Close">
+    <div id="pad-header" class="p-3 flex justify-between items-center cursor-grab border-b select-none">
+        <h3 class="font-bold">✏️ Interactive Viewer Pad (Resizable!)</h3>
+        <button id="close-pad" class="hover:text-red-300 transition" title="Close">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
     </div>
     
-    <div class="bg-gray-50 p-2 flex flex-wrap justify-between items-center border-b border-gray-200">
-        <div class="flex items-center space-x-2 text-sm text-gray-600">
+    <div class="p-2 flex flex-wrap justify-between items-center border-b border-gray-200 bg-gray-50 dark:bg-gray-800">
+        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
             <span>Timezone:</span>
-            <select id="timezone-select" class="p-1 text-xs border rounded-md bg-white shadow-sm"></select>
+            <select id="timezone-select" class="p-1 text-xs border rounded-md bg-white dark:bg-gray-700 dark:text-white shadow-sm"></select>
         </div>
         <div id="current-time" class="font-mono font-bold text-xl text-[var(--accent-color)]">--:--:--</div>
     </div>
 
-    <div class="p-3 border-b border-gray-200 flex flex-wrap gap-2 items-center justify-start">
+    <div class="p-3 border-b border-gray-200 flex flex-wrap gap-2 items-center justify-start bg-gray-50 dark:bg-gray-800">
         
-        <label for="color-picker" class="text-sm font-medium text-gray-600 mr-2 hidden sm:block">Color:</label>
+        <label for="color-picker" class="text-sm font-medium text-gray-600 dark:text-gray-300 mr-2 hidden sm:block">Color:</label>
         <input type="color" id="color-picker" class="w-8 h-8 rounded-full border-2 border-gray-400 hover:border-gray-600 cursor-pointer p-0" value="#9333ea">
 
         <button data-color="#9333ea" class="color-swatch w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition color-swatch-selected" title="Purple"></button>
         <button data-color="#000000" class="color-swatch w-6 h-6 rounded-full bg-black hover:scale-110 transition" title="Black"></button>
         <button data-color="#10b981" class="color-swatch w-6 h-6 rounded-full bg-emerald-500 hover:scale-110 transition" title="Green"></button>
 
-        <button id="tool-pencil" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium flex items-center tool-selected" data-tool="pencil" title="Pencil Tool">
+        <button id="tool-pencil" class="tool-btn p-2 px-3 text-sm border rounded-md transition font-medium flex items-center tool-selected" data-tool="pencil" title="Pencil Tool">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L15.232 5.232z"></path></svg>
             Draw
         </button>
-        <button id="tool-eraser" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium flex items-center hover:bg-gray-100" data-tool="eraser" title="Eraser Tool (White)">
+        <button id="tool-eraser" class="tool-btn p-2 px-3 text-sm border rounded-md transition font-medium flex items-center hover:bg-gray-100 dark:hover:bg-gray-700" data-tool="eraser" title="Eraser Tool (White)">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             Erase
         </button>
         
-        <button id="tool-emoji" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium hover:bg-gray-100 flex items-center" data-tool="emoji" title="Select and Insert an Emoji">
+        <button id="tool-emoji" class="tool-btn p-2 px-3 text-sm border rounded-md transition font-medium hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center" data-tool="emoji" title="Select and Insert an Emoji">
             <span class="text-lg leading-none">😀</span>
             Emoji
         </button>
 
-        <button id="tool-type" class="tool-btn p-2 px-3 text-sm border border-gray-300 rounded-md transition font-medium hover:bg-gray-100 flex items-center" data-tool="type" title="Insert text at click position">
+        <button id="tool-type" class="tool-btn p-2 px-3 text-sm border rounded-md transition font-medium hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center" data-tool="type" title="Insert text at click position">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             Type
         </button>
 
-        <button id="clear-pad" class="p-2 px-3 text-sm bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition font-medium ml-auto">
+        <button id="clear-pad" class="p-2 px-3 text-sm bg-red-100 text-red-600 rounded-md hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800 transition font-medium ml-auto">
             Clear Pad
         </button>
     </div>
@@ -249,7 +249,7 @@
         <canvas id="drawing-canvas" class="w-full h-full"></canvas>
         
         <div id="emoji-palette" class="placement-ui hidden">
-            <h4 class="font-bold text-gray-700 mb-3 text-center">Select an Emoji</h4>
+            <h4 class="font-bold text-gray-700 dark:text-gray-300 mb-3 text-center">Select an Emoji</h4>
             <div id="emoji-options" class="grid grid-cols-6 gap-2">
                 <span class="emoji-option" data-emoji="🌟">🌟</span>
                 <span class="emoji-option" data-emoji="💡">💡</span>
@@ -270,30 +270,41 @@
     </div>
 </div>
 
-<header class="p-6 md:px-16 flex justify-between items-center bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-purple-200/50">
-    <div class="text-2xl font-extrabold tracking-wider text-[var(--primary-color)]">Sabrina Sultana<span class="text-[var(--accent-color)]">.</span></div>
-    <nav class="hidden md:flex space-x-8 text-lg font-medium">
-        <a href="#hero" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Home</a>
-        <a href="#about" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">About</a>
-        <a href="#skills" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Skills</a>
-        <a href="#projects" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Projects</a>
-        <a href="#live-demo" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Live Demos</a>
-        <a href="#games" class="text-[var(--primary-color)] font-extrabold hover:text-[var(--accent-color)] transition duration-300">Games</a> 
-        <a href="#credentials" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Credentials</a>
-        <a href="#contact" class="text-gray-700 hover:text-[var(--accent-color)] transition duration-300">Contact</a>
+<header class="p-6 md:px-16 flex justify-between items-center bg-white/90 dark:bg-gray-800/90 backdrop-blur-md sticky top-0 z-50 border-b border-purple-200/50">
+    <div class="flex items-center space-x-4">
+        <div class="text-2xl font-extrabold tracking-wider text-[var(--primary-color)]">Sabrina Sultana<span class="text-[var(--accent-color)]">.</span></div>
+    </div>
+    
+    <nav class="flex items-center space-x-4 md:space-x-8 text-lg font-medium">
+        <div class="hidden md:flex space-x-8">
+            <a href="#hero" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Home</a>
+            <a href="#about" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">About</a>
+            <a href="#skills" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Skills</a>
+            <a href="#projects" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Projects</a>
+            <a href="#live-demo" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Live Demos</a>
+            <a href="#games" class="text-[var(--primary-color)] font-extrabold hover:text-[var(--accent-color)] transition duration-300">Games</a> 
+            <a href="#credentials" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Credentials</a>
+            <a href="#contact" class="text-gray-700 dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300">Contact</a>
+        </div>
+        
+        <button id="theme-toggle-top" class="p-2 rounded-full hover:dark:text-gray-300 hover:text-[var(--accent-color)] transition duration-300" title="Toggle Dark/Light Mode">
+            <svg id="sun-icon-top" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <svg id="moon-icon-top" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+        
+        <button class="md:hidden text-purple-800 text-2xl">&#9776;</button>
     </nav>
-    <button class="md:hidden text-purple-800 text-2xl">&#9776;</button>
 </header>
 
 <section id="hero" class="flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-16 py-24 min-h-[calc(100vh-80px)]">
     <div class="w-full md:w-1/2 hero-text mt-12 md:mt-0 space-y-4">
-        <h3 class="text-xl md:text-2xl font-medium text-gray-600">Hello, It's Me</h3>
+        <h3 class="text-xl md:text-2xl font-medium text-gray-600 dark:text-gray-400">Hello, It's Me</h3>
         <h1 class="text-5xl md:text-8xl font-black leading-tight">Sabrina Sultana</h1>
         <div class="text-2xl md:text-4xl font-semibold flex flex-wrap mb-6 justify-center md:justify-start">
-            <span class="text-gray-800 mr-2">And I'm</span>
+            <span class="text-gray-800 dark:text-gray-200 mr-2">And I'm</span>
             <span id="typing-text" class="text-[var(--accent-color)]"></span><span class="typing-cursor"></span>
         </div>
-        <p class="text-base md:text-lg text-gray-700 max-w-lg leading-relaxed md:text-left mx-auto md:mx-0">
+        <p class="text-base md:text-lg text-gray-700 dark:text-gray-300 max-w-lg leading-relaxed md:text-left mx-auto md:mx-0">
             With expertise in computer vision, image processing, and bioinformatics, I bring over 2 years of experience developing intelligent systems, medical imaging solutions, and AI-powered applications.
         </p>
     </div>
@@ -310,7 +321,7 @@
 
 <section id="about" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
     <h2 class="section-title text-center mb-12">🪄 About Me</h2>
-    <div class="mt-8 max-w-4xl mx-auto text-gray-700 text-lg space-y-5 p-6 bg-white/50 rounded-xl shadow-inner">
+    <div class="mt-8 max-w-4xl mx-auto text-[var(--text-color)] text-lg space-y-5 p-6 professional-card shadow-inner bg-white/50 dark:bg-gray-700/50">
         <p>🎓 I am currently pursuing a **Bachelor of Science in Computer Science & Engineering** at Brac University, Dhaka, Bangladesh.</p>
         <p>🔬 My thesis focuses on developing a **Privacy-Preserving Hybrid Deep Learning Framework** for Skin Disease Detection & Clinical Decision Support, combining U-Net, Transformers, and Federated Learning concepts.</p>
         <p>🧠 My core research interests span **U-Net + Transformers**, Multimodal AI, MAMBA, Federated Learning, and the intersection of **AI & Bioinformatics**.</p>
@@ -318,56 +329,56 @@
     </div>
 </section>
 
-<section id="skills" class="px-6 md:px-16 py-20 bg-white/40 border-t border-purple-200/50">
+<section id="skills" class="px-6 md:px-16 py-20 bg-white/40 dark:bg-gray-800/40 border-t border-purple-200/50">
     <h2 class="section-title text-center mb-12">⚙️ Skills & Tools</h2>
     <div id="skill-container" class="skill-container grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-8 mt-8 max-w-6xl mx-auto justify-items-center">
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=python" class="w-14 h-14 mb-2" alt="Python"/>
-            <span class="text-sm text-gray-700 font-medium">Python</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Python</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=pytorch" class="w-14 h-14 mb-2" alt="PyTorch"/>
-            <span class="text-sm text-gray-700 font-medium">PyTorch</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">PyTorch</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=tensorflow" class="w-14 h-14 mb-2" alt="TensorFlow"/>
-            <span class="text-sm text-gray-700 font-medium">TensorFlow</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">TensorFlow</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=opencv" class="w-14 h-14 mb-2" alt="OpenCV"/>
-            <span class="text-sm text-gray-700 font-medium">OpenCV</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">OpenCV</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=scikitlearn" class="w-14 h-14 mb-2" alt="Scikit-learn"/>
-            <span class="text-sm text-gray-700 font-medium">Sklearn</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Sklearn</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=js" class="w-14 h-14 mb-2" alt="JavaScript"/>
-            <span class="text-sm text-gray-700 font-medium">JavaScript</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">JavaScript</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=java" class="w-14 h-14 mb-2" alt="Java"/>
-            <span class="text-sm text-gray-700 font-medium">Java</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Java</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=aws" class="w-14 h-14 mb-2" alt="AWS"/>
-            <span class="text-sm text-gray-700 font-medium">AWS</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">AWS</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=git" class="w-14 h-14 mb-2" alt="Git"/>
-            <span class="text-sm text-gray-700 font-medium">Git</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Git</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=linux" class="w-14 h-14 mb-2" alt="Linux"/>
-            <span class="text-sm text-gray-700 font-medium">Linux</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Linux</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=html" class="w-14 h-14 mb-2" alt="HTML"/>
-            <span class="text-sm text-gray-700 font-medium">HTML</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">HTML</span>
         </div>
         <div class="flex flex-col items-center skill-item" draggable="true">
             <img src="https://skillicons.dev/icons?i=css" class="w-14 h-14 mb-2" alt="CSS"/>
-            <span class="text-sm text-gray-700 font-medium">CSS</span>
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">CSS</span>
         </div>
     </div>
 </section>
@@ -377,55 +388,55 @@
     <div id="project-container" class="project-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 max-w-5xl mx-auto">
         <div class="professional-card" draggable="true" data-id="project-1">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🩺 Privacy-Preserving Skin Disease Detection</h3>
-            <p class="text-sm text-gray-500 mb-3">Thesis Project | AI/ML, Federated Learning</p>
-            <p class="text-gray-700 grow">Explores U-Net + Transformer architectures and multimodal learning with federated privacy for secure medical AI development.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Thesis Project | AI/ML, Federated Learning</p>
+            <p class="grow">Explores U-Net + Transformer architectures and multimodal learning with federated privacy for secure medical AI development.</p>
             <p class="mt-4 text-[var(--accent-color)] font-semibold">Status: In Development</p>
         </div>
         <div class="professional-card" draggable="true" data-id="project-2">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🧠 Real-Time Emotion Detector</h3>
-            <p class="text-sm text-gray-500 mb-3">Computer Vision, CNN</p>
-            <p class="text-gray-700 grow">Detects human emotions from live video streams using a Convolutional Neural Network and Facial Landmark recognition.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Computer Vision, CNN</p>
+            <p class="grow">Detects human emotions from live video streams using a Convolutional Neural Network and Facial Landmark recognition.</p>
             <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Live Demo Below ↓</a>
         </div>
         <div class="professional-card" draggable="true" data-id="project-3">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🎶 Music Cloud Platform Clone</h3>
-            <p class="text-sm text-gray-500 mb-3">Full-stack Web Development</p>
-            <p class="text-gray-700 grow">A robust, full-stack web application inspired by Spotify, demonstrating competence in backend services and modern frontend frameworks.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Full-stack Web Development</p>
+            <p class="grow">A robust, full-stack web application inspired by Spotify, demonstrating competence in backend services and modern frontend frameworks.</p>
             <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Live Demo Below ↓</a>
         </div>
         <div class="professional-card" draggable="true" data-id="project-4">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🔬 Diffusion-Based MRI Enhancement</h3>
-            <p class="text-sm text-gray-500 mb-3">AI/ML, Generative Models</p>
-            <p class="text-gray-700 grow">Implemented a Diffusion Model to significantly enhance the resolution and clarity of low-quality MRI scans for better diagnostic outcomes.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">AI/ML, Generative Models</p>
+            <p class="grow">Implemented a Diffusion Model to significantly enhance the resolution and clarity of low-quality MRI scans for better diagnostic outcomes.</p>
             <a href="#" target="_blank" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Code →</a>
         </div>
         <div class="professional-card" draggable="true" data-id="project-5">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🐍 Python Bioinformatics Toolkit</h3>
-            <p class="text-sm text-gray-500 mb-3">Bioinformatics, Data Analysis</p>
-            <p class="text-gray-700 grow">Developed a suite of Python scripts for common tasks like sequence alignment, gene expression analysis, and data visualization.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Bioinformatics, Data Analysis</p>
+            <p class="grow">Developed a suite of Python scripts for common tasks like sequence alignment, gene expression analysis, and data visualization.</p>
             <a href="#" target="_blank" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">View Code →</a>
         </div>
         <div class="professional-card" draggable="true" data-id="project-6">
             <h3 class="text-xl font-bold text-[var(--primary-color)]">🎮 Dino Game Clone (JS)</h3>
-            <p class="text-sm text-gray-500 mb-3">Web Development, JavaScript</p>
-            <p class="text-gray-700 grow">Classic T-Rex runner clone built entirely with HTML, CSS, and vanilla JavaScript to demonstrate core programming logic.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Web Development, JavaScript</p>
+            <p class="grow">Classic T-Rex runner clone built entirely with HTML, CSS, and vanilla JavaScript to demonstrate core programming logic.</p>
             <a href="#live-demo" class="text-[var(--accent-color)] hover:underline block mt-4 font-semibold">Play Live Below ↓</a>
         </div>
     </div>
-    <div class="mt-12 text-center text-gray-600">
+    <div class="mt-12 text-center text-gray-600 dark:text-gray-400">
         <p class="text-lg">For a complete list of all repositories, please visit my <a href="https://github.com/Sabrina-Sultana13" target="_blank" class="text-[var(--accent-color)] hover:underline font-semibold">GitHub profile</a>.</p>
     </div>
 </section>
 
-<section id="live-demo" class="px-6 md:px-16 py-20 bg-white/70 border-y border-purple-200/50">
+<section id="live-demo" class="px-6 md:px-16 py-20 bg-white/70 dark:bg-gray-800/70 border-y border-purple-200/50">
     <h2 class="section-title text-center mb-6">💻 Interactive Live Demos</h2>
-    <p class="text-center text-gray-600 mb-8 max-w-5xl mx-auto">
+    <p class="text-center text-gray-600 dark:text-gray-300 mb-8 max-w-5xl mx-auto">
         Experience three of my key utility projects live here. **Drag and drop these cards to reorder them!** All embedded websites are responsive.
     </p>
-    <div id="live-demo-container" class="live-demo-container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div id="live-demo-container" class="live-demo-container max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         
-        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-1">
-            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🦖 Dino Game Clone</h3>
+        <div class="live-demo-item professional-card p-4 h-[55vh]" draggable="true" data-id="demo-1">
+            <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3 text-center">🦖 Dino Game Clone</h3>
             <iframe class="live-demo-iframe" 
                     src="https://dinooooo.vercel.app/" 
                     title="Live Dino Game Clone Demo" 
@@ -433,8 +444,8 @@
             </iframe>
         </div>
 
-        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-2">
-            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🧠 Real-Time Emotion Detector</h3>
+        <div class="live-demo-item professional-card p-4 h-[55vh]" draggable="true" data-id="demo-2">
+            <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3 text-center">🧠 Real-Time Emotion Detector</h3>
             <iframe class="live-demo-iframe" 
                     src="https://emotion-detector-six.vercel.app/" 
                     title="Live Emotion Detector Demo" 
@@ -442,8 +453,8 @@
             </iframe>
         </div>
         
-        <div class="live-demo-item professional-card p-4" draggable="true" data-id="demo-3">
-            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🎶 Music Cloud Platform Clone</h3>
+        <div class="live-demo-item professional-card p-4 h-[55vh]" draggable="true" data-id="demo-3">
+            <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3 text-center">🎶 Music Cloud Platform Clone</h3>
             <iframe class="live-demo-iframe" 
                     src="https://clone-spotify-2-2.vercel.app/" 
                     title="Live Music Cloud Platform Demo" 
@@ -454,15 +465,15 @@
     </div>
 </section>
 
-<section id="games" class="px-6 md:px-16 py-20 bg-white/70 border-y border-purple-200/50">
+<section id="games" class="px-6 md:px-16 py-20 bg-white/70 dark:bg-gray-800/70 border-y border-purple-200/50">
     <h2 class="section-title text-center mb-6">🎮 Galactic Game Hub </h2>
-    <p class="text-center text-gray-600 mb-8 max-w-5xl mx-auto">
+    <p class="text-center text-gray-600 dark:text-gray-300 mb-8 max-w-5xl mx-auto">
         Play your favourite game.
     </p>
     <div id="games-container" class="live-demo-container games-container max-w-7xl mx-auto grid grid-cols-1 gap-8">
         
-        <div class="live-demo-item professional-card p-4 col-span-1 md:col-span-2 lg:col-span-3" draggable="true" data-id="game-2">
-            <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">🚀 Galactic Game Hub</h3>
+        <div class="live-demo-item professional-card p-4 col-span-full h-[70vh]" draggable="true" data-id="game-2">
+            <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3 text-center">🚀 Galactic Game Hub</h3>
             <iframe class="live-demo-iframe" 
                     src="https://galactic-game-hub.vercel.app/" 
                     title="Galactic Game Hub Demo" 
@@ -472,9 +483,10 @@
         
     </div>
 </section>
+
 <section id="credentials" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
     <h2 class="section-title text-center mb-12">🎖️ Credentials & Awards</h2>
-    <div class="max-w-4xl mx-auto text-center text-gray-600 text-lg p-6 professional-card">
+    <div class="max-w-4xl mx-auto text-[var(--text-color)] text-lg p-6 professional-card">
         <h3 class="text-xl font-bold text-[var(--primary-color)] mb-3">Education & Certifications</h3>
         <ul class="list-disc list-inside space-y-2 mx-auto inline-block text-left">
             <li><b>Brac University:</b> BSc in Computer Science & Engineering (Expected 2026)</li>
@@ -529,8 +541,55 @@
     <p class="text-sm mt-8 text-gray-500">&copy; 2025 Sabrina Sultana. All rights reserved.</p>
 </section>
 <script>
+    // --- Dark/Light Mode Toggle Logic ---
+    const themeToggleTopBtn = document.getElementById('theme-toggle-top');
+    const htmlElement = document.documentElement;
+    const sunIconTop = document.getElementById('sun-icon-top');
+    const moonIconTop = document.getElementById('moon-icon-top');
+
+    // Function to set the theme based on local storage or default
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            htmlElement.classList.add('dark');
+            htmlElement.classList.remove('light');
+            localStorage.setItem('theme', 'dark');
+            
+            // Update Top Icons: Show Sun (to indicate you can switch to light)
+            sunIconTop.classList.remove('hidden');
+            moonIconTop.classList.add('hidden');
+        } else {
+            htmlElement.classList.add('light');
+            htmlElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            
+            // Update Top Icons: Show Moon (to indicate you can switch to dark)
+            sunIconTop.classList.add('hidden');
+            moonIconTop.classList.remove('hidden');
+        }
+    }
+
+    // Check saved theme or use system preference/default
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Apply the saved theme or the system preference
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (prefersDark) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+
+    // Toggle listener for TOP button
+    themeToggleTopBtn.addEventListener('click', () => {
+        const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    });
+    
     // --- Typing Effect Logic ---
-    const roles = ["an AI Engineer", "a Computer Vision Researcher", "a Full-Stack Developer", "an Aspiring Data Scientist"];
+    const roles = ['an AI/ML Specialist', 'a Software Engineer', 'a Deep Learning Researcher', 'a Computer Vision Researcher', 'a Full-Stack Developer', 'an Aspiring Data Scientist'];
     let roleIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -695,18 +754,38 @@
         // Tool Settings
         const toolSettings = {
             pencil: { size: 5, color: currentColor },
-            eraser: { size: 20, color: '#ffffff' }, 
+            eraser: { size: 20, color: '' }, // Will be set dynamically by getColorForEraser
             emoji: { size: 30, color: '#000000' },
             type: { size: 16, color: '#000000' }
         };
+        
+        // Helper function to get the current canvas/background color for the eraser
+        function getColorForEraser() {
+            // Get the computed background color of the canvas
+            const style = window.getComputedStyle(canvas);
+            const bgColor = style.getPropertyValue('background-color');
+            
+            // Fallback to the CSS variable value for a predictable color in dark mode
+            if (htmlElement.classList.contains('dark')) {
+                 return window.getComputedStyle(document.body).getPropertyValue('--subtle-bg') || '#374151';
+            }
+             // Fallback to white for light mode
+            return '#ffffff'; 
+        }
 
         // --- Canvas Initialization & Resizing ---
         function resizeCanvas() {
+            // Store the current drawing data
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
             // Set canvas drawing dimensions to match the container's *current* size
             const rect = canvas.parentElement.getBoundingClientRect();
             
             canvas.width = rect.width;
             canvas.height = rect.height;
+
+            // Restore the drawing data
+            ctx.putImageData(imageData, 0, 0);
 
             // Optional: Restore drawing context settings after resize
             ctx.lineCap = 'round';
@@ -865,8 +944,11 @@
             if (activeTool === 'pencil' || activeTool === 'eraser') {
                 isDrawing = true;
                 [lastX, lastY] = [x, y];
-                // Draw a dot on mousedown for better start
-                const tool = activeTool === 'pencil' ? toolSettings.pencil : toolSettings.eraser;
+                
+                const tool = activeTool === 'pencil' ? toolSettings.pencil : { 
+                    size: toolSettings.eraser.size, 
+                    color: getColorForEraser() 
+                };
                 drawLine(x, y, x, y, tool.size, tool.color); 
             } else if (activeTool === 'emoji') {
                 showEmojiPalette(x, y);
@@ -880,7 +962,10 @@
             
             const { x, y } = getMousePos(e);
             
-            const tool = activeTool === 'pencil' ? toolSettings.pencil : toolSettings.eraser;
+            const tool = activeTool === 'pencil' ? toolSettings.pencil : { 
+                size: toolSettings.eraser.size, 
+                color: getColorForEraser() 
+            };
             drawLine(lastX, lastY, x, y, tool.size, tool.color);
             
             [lastX, lastY] = [x, y];
