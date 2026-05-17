@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     
     <style>
+        
         /* Define color variables for easy theming */
         :root {
             /* Light Mode Variables (Default) */
@@ -57,7 +58,7 @@
             0%,100% {opacity:1;}
             50% {opacity:0;}
         }
-
+      
         /* Section Titles */
         .section-title {
             font-size: 2.5rem; 
@@ -186,9 +187,45 @@
         #theme-toggle-top {
             color: var(--text-color);
         }
+        .cursor-spark {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
 
+    /* softer, formal tone */
+    background: rgba(147, 51, 234, 0.35);
+
+    /* subtle glow */
+    box-shadow: 0 0 6px rgba(147, 51, 234, 0.25);
+
+    animation: sparkFade 0.7s ease-out forwards;
+}
     </style>
 </head>
+<script>
+    document.addEventListener("mousemove", (e) => {
+        const spark = document.createElement("div");
+        spark.className = "cursor-spark";
+    
+        spark.style.left = e.clientX + "px";
+        spark.style.top = e.clientY + "px";
+    
+        // random size variation
+        const size = Math.random() * 6 + 4;
+        spark.style.width = size + "px";
+        spark.style.height = size + "px";
+    
+        document.body.appendChild(spark);
+    
+        setTimeout(() => {
+            spark.remove();
+        }, 700);
+    });
+    
+    </script>
 <body class="selection:bg-purple-300 selection:text-gray-900">
 
 <button id="toggle-pad" class="fixed bottom-6 right-6 p-4 rounded-full bg-[var(--accent-color)] text-white shadow-lg hover:opacity-80 transition duration-300 z-[1050]" title="Toggle Interactive Pad/Notepad">
@@ -329,59 +366,282 @@
     </div>
 </section>
 
-<section id="skills" class="px-6 md:px-16 py-20 bg-white/40 dark:bg-gray-800/40 border-t border-purple-200/50">
-    <h2 class="section-title text-center mb-12">⚙️ Skills & Tools</h2>
-    <div id="skill-container" class="skill-container grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-8 mt-8 max-w-6xl mx-auto justify-items-center">
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=python" class="w-14 h-14 mb-2" alt="Python"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Python</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=pytorch" class="w-14 h-14 mb-2" alt="PyTorch"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">PyTorch</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=tensorflow" class="w-14 h-14 mb-2" alt="TensorFlow"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">TensorFlow</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=opencv" class="w-14 h-14 mb-2" alt="OpenCV"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">OpenCV</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=scikitlearn" class="w-14 h-14 mb-2" alt="Scikit-learn"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Sklearn</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=js" class="w-14 h-14 mb-2" alt="JavaScript"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">JavaScript</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=java" class="w-14 h-14 mb-2" alt="Java"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Java</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=aws" class="w-14 h-14 mb-2" alt="AWS"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">AWS</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=git" class="w-14 h-14 mb-2" alt="Git"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Git</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=linux" class="w-14 h-14 mb-2" alt="Linux"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Linux</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=html" class="w-14 h-14 mb-2" alt="HTML"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">HTML</span>
-        </div>
-        <div class="flex flex-col items-center skill-item" draggable="true">
-            <img src="https://skillicons.dev/icons?i=css" class="w-14 h-14 mb-2" alt="CSS"/>
-            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">CSS</span>
-        </div>
+<!-- Component-Scoped Styles -->
+<style>
+    :root {
+        --primary-color: #8B5CF6;
+    }
+
+    /* Gentle Bobbing Floating Keyframes */
+    @keyframes gentle-float {
+        0% {
+            transform: translateY(-8px);
+        }
+        100% {
+            transform: translateY(-14px);
+        }
+    }
+
+    /* Draggable & Floating interactive states */
+    .skill-item {
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.3s ease, 
+                    border-color 0.3s ease, 
+                    box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: grab;
+    }
+    .skill-item:active {
+        cursor: grabbing;
+    }
+
+    /* Trigger organic floating loop on hover */
+    .skill-item:hover:not(.dragging) {
+        border-color: rgba(139, 92, 246, 0.45) !important;
+        box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.25), 
+                    0 8px 10px -6px rgba(139, 92, 246, 0.2);
+        animation: gentle-float 1.8s ease-in-out infinite alternate;
+        /* Smooth lift starting position */
+        transform: translateY(-8px);
+    }
+
+    .skill-item.dragging {
+        opacity: 0.3;
+        transform: scale(0.9) translateY(0);
+        box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
+        animation: none !important;
+    }
+    .skill-item.drag-over {
+        border-color: var(--primary-color) !important;
+        background-color: rgba(139, 92, 246, 0.05);
+        transform: scale(1.05) translateY(0);
+        animation: none !important;
+    }
+</style>
+
+<h2 class="section-title text-center mb-4 text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">⚙️ Skills & Tools</h2>
+
+<p class="text-center text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto text-sm">
+    Toggle categories to filter tools, or drag and drop skill badges to reorder your custom layout hierarchy!
+</p>
+
+<!-- CATEGORY TOGGLES -->
+<div class="flex flex-wrap justify-center gap-2 mb-10 max-w-xl mx-auto">
+    <button data-filter="all" class="filter-btn px-4 py-2 text-xs md:text-sm font-semibold rounded-full bg-purple-600 text-white shadow transition-all duration-200">
+        ✨ All Tools
+    </button>
+    <button data-filter="ml" class="filter-btn px-4 py-2 text-xs md:text-sm font-semibold rounded-full bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-all duration-200">
+        🧠 AI & Machine Learning
+    </button>
+    <button data-filter="web" class="filter-btn px-4 py-2 text-xs md:text-sm font-semibold rounded-full bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-all duration-200">
+        🌐 Software & Web
+    </button>
+    <button data-filter="devops" class="filter-btn px-4 py-2 text-xs md:text-sm font-semibold rounded-full bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-all duration-200">
+        ⚙️ Infrastructure
+    </button>
+</div>
+
+<!-- SKILLS GRID CONTAINER -->
+<div id="skill-container" class="skill-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6 gap-6 max-w-5xl mx-auto justify-items-center">
+    
+    <!-- PYTHON (ML) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="ml" data-id="python">
+        <img src="https://skillicons.dev/icons?i=python" class="w-12 h-12 mb-2 select-none" alt="Python" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">Python</span>
     </div>
-</section>
+
+    <!-- PYTORCH (ML) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="ml" data-id="pytorch">
+        <img src="https://skillicons.dev/icons?i=pytorch" class="w-12 h-12 mb-2 select-none" alt="PyTorch" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">PyTorch</span>
+    </div>
+
+    <!-- TENSORFLOW (ML) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="ml" data-id="tensorflow">
+        <img src="https://skillicons.dev/icons?i=tensorflow" class="w-12 h-12 mb-2 select-none" alt="TensorFlow" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">TensorFlow</span>
+    </div>
+
+    <!-- OPENCV (ML) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="ml" data-id="opencv">
+        <img src="https://skillicons.dev/icons?i=opencv" class="w-12 h-12 mb-2 select-none" alt="OpenCV" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">OpenCV</span>
+    </div>
+
+    <!-- SCIKIT-LEARN (ML) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="ml" data-id="scikitlearn">
+        <img src="https://skillicons.dev/icons?i=scikitlearn" class="w-12 h-12 mb-2 select-none" alt="Scikit-learn" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">Sklearn</span>
+    </div>
+
+    <!-- JAVASCRIPT (WEB) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="web" data-id="js">
+        <img src="https://skillicons.dev/icons?i=js" class="w-12 h-12 mb-2 select-none" alt="JavaScript" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">JavaScript</span>
+    </div>
+
+    <!-- JAVA (WEB/CORE) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="web" data-id="java">
+        <img src="https://skillicons.dev/icons?i=java" class="w-12 h-12 mb-2 select-none" alt="Java" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">Java</span>
+    </div>
+
+    <!-- AWS (DEVOPS) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="devops" data-id="aws">
+        <img src="https://skillicons.dev/icons?i=aws" class="w-12 h-12 mb-2 select-none" alt="AWS" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">AWS</span>
+    </div>
+
+    <!-- GIT (DEVOPS) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="devops" data-id="git">
+        <img src="https://skillicons.dev/icons?i=git" class="w-12 h-12 mb-2 select-none" alt="Git" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">Git</span>
+    </div>
+
+    <!-- LINUX (DEVOPS) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="devops" data-id="linux">
+        <img src="https://skillicons.dev/icons?i=linux" class="w-12 h-12 mb-2 select-none" alt="Linux" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">Linux</span>
+    </div>
+
+    <!-- HTML (WEB) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="web" data-id="html">
+        <img src="https://skillicons.dev/icons?i=html" class="w-12 h-12 mb-2 select-none" alt="HTML" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">HTML</span>
+    </div>
+
+    <!-- CSS (WEB) -->
+    <div class="flex flex-col items-center justify-center p-4 w-28 h-28 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-900/50 hover:border-purple-400 hover:shadow-md transition-all duration-200 skill-item" draggable="true" data-category="web" data-id="css">
+        <img src="https://skillicons.dev/icons?i=css" class="w-12 h-12 mb-2 select-none" alt="CSS" draggable="false"/>
+        <span class="text-xs text-gray-700 dark:text-gray-300 font-semibold select-none">CSS</span>
+    </div>
+
+</div>
+
+<!-- Component-Scoped Interactivity Engines -->
+<script>
+    (function() {
+        // --- 1. Category Filtering Toggles ---
+        function setupFilters() {
+            const filterButtons = document.querySelectorAll(".filter-btn");
+            const skillItems = document.querySelectorAll(".skill-item");
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const filter = btn.getAttribute("data-filter");
+
+                    // Toggle active button class styling
+                    filterButtons.forEach(b => {
+                        b.classList.remove("bg-purple-600", "text-white", "shadow");
+                        b.classList.add("bg-gray-100", "dark:bg-gray-900", "text-gray-600", "dark:text-gray-400");
+                    });
+                    btn.classList.add("bg-purple-600", "text-white", "shadow");
+                    btn.classList.remove("bg-gray-100", "dark:bg-gray-900", "text-gray-600", "dark:text-gray-400");
+
+                    // Filter skills visibility smoothly
+                    skillItems.forEach(item => {
+                        const category = item.getAttribute("data-category");
+                        if (filter === "all" || category === filter) {
+                            item.style.display = "flex";
+                            // Quick animate scale-in
+                            setTimeout(() => {
+                                item.style.opacity = "1";
+                                item.style.transform = "scale(1)";
+                            }, 50);
+                        } else {
+                            item.style.opacity = "0";
+                            item.style.transform = "scale(0.8)";
+                            setTimeout(() => {
+                                item.style.display = "none";
+                            }, 200);
+                        }
+                    });
+                });
+            });
+        }
+
+        // --- 2. Interactive Drag & Drop sorting toggle logic ---
+        let dragSourceElement = null;
+
+        function handleDragStart(e) {
+            dragSourceElement = this;
+            this.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/html", this.innerHTML);
+            e.dataTransfer.setData("id", this.getAttribute("data-id"));
+            e.dataTransfer.setData("category", this.getAttribute("data-category"));
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== dragSourceElement) {
+                this.classList.add("drag-over");
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove("drag-over");
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+
+            if (dragSourceElement !== this) {
+                // Save target data values before overwrite
+                const targetHTML = this.innerHTML;
+                const targetID = this.getAttribute("data-id");
+                const targetCategory = this.getAttribute("data-category");
+
+                // Swapping layout contents
+                dragSourceElement.innerHTML = this.innerHTML;
+                dragSourceElement.setAttribute("data-id", targetID);
+                dragSourceElement.setAttribute("data-category", targetCategory);
+
+                // Set Source details onto Target
+                this.innerHTML = e.dataTransfer.getData("text/html");
+                this.setAttribute("data-id", e.dataTransfer.getData("id"));
+                this.setAttribute("data-category", e.dataTransfer.getData("category"));
+            }
+            return false;
+        }
+
+        // Clean up dragging visual indicators on all cards
+        function handleDragEnd(e) {
+            const skillItems = document.querySelectorAll(".skill-item");
+            skillItems.forEach(item => {
+                item.classList.remove("dragging", "drag-over");
+            });
+        }
+
+        function setupDragAndDrop() {
+            const skillItems = document.querySelectorAll(".skill-item");
+            skillItems.forEach(item => {
+                item.addEventListener("dragstart", handleDragStart, false);
+                item.addEventListener("dragenter", handleDragEnter, false);
+                item.addEventListener("dragover", handleDragOver, false);
+                item.addEventListener("dragleave", handleDragLeave, false);
+                item.addEventListener("drop", handleDrop, false);
+                item.addEventListener("dragend", handleDragEnd, false);
+            });
+        }
+
+        // --- 3. Initialization Safe guard wrapper ---
+        function initSkillsSection() {
+            setupFilters();
+            setupDragAndDrop();
+        }
+
+        if (document.readyState === "loading") {
+            window.addEventListener('DOMContentLoaded', initSkillsSection);
+        } else {
+            initSkillsSection();
+        }
+    })();
+</script>
 
 <section id="projects" class="px-6 md:px-16 py-20 border-t border-purple-200/50">
     <h2 class="section-title text-center mb-12">💡 Featured Projects & Research</h2>
